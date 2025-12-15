@@ -13,6 +13,7 @@ A high-performance social network backend built with [ElysiaJS](https://elysiajs
 -   **Authentication**: JWT-based authentication with secure password hashing (Argon2 via Bun).
 -   **Database**: PostgreSQL integration using Prisma ORM (v7).
 -   **Comments**: Post comments system.
+-   **AI Moderation**: Automatic toxicity detection for comments using TensorFlow.js.
 -   **Documentation**: Interactive Swagger API documentation.
 
 ## Requirements Specification
@@ -44,6 +45,7 @@ A high-performance social network backend built with [ElysiaJS](https://elysiajs
     - An author (`User`) who wrote the comment.
     - A post (`Post`) where the comment was made.
 - **DR-14 (Auditing)**: The comment record must maintain automatic creation and update dates.
+- **DR-15 (AI Moderation)**: Every comment content must be analyzed by an AI model (TensorFlow.js) before persistence. If the confidence of toxicity is high (e.g., >90%), the comment must be rejected (Business Rule).
 
 ### 3. Functional Requirements (Relationships)
 - **FR-01 (User -> Posts)**: The system must allow a user to have zero, one, or multiple posts (1:N Relationship).
@@ -68,6 +70,11 @@ While Node.js + Express is the industry standard, I chose **Bun + Elysia** for t
 -   **Data Integrity**: Relational data (Users <-> Posts) demands ACID compliance.
 -   **Prisma ORM**: Chosen for its type-safe query builder which catches schema errors at compile time.
     -   *Note on N+1*: I explicitly use `include` (e.g., retrieving Author with Posts) to ensure efficient data fetching in a single query.
+
+### 🧠 Artificial Intelligence
+-   **TensorFlow.js**: Used for running machine learning models directly in the Node.js/Bun backend.
+-   **Toxicity Model**: Utilizing `@tensorflow-models/toxicity` to classify comments in real-time.
+    -   *Performance*: Lightweight model loaded as a Singleton to prevent memory leaks and ensure low latency.
 
 ## Architecture
 
@@ -163,6 +170,7 @@ src
 ├── auth/          # Feature: Authentication
 ├── posts/         # Feature: Posts (Controller, Service, Schema)
 ├── comments/      # Feature: Comments
+├── ml/            # Feature: Machine Learning Service (TensorFlow.js)
 ├── lib/           # Shared: Prisma Client
 ├── utils/         # Shared: Hashing, JWT helpers
 └── index.ts       # App Entry point

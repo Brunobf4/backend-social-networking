@@ -1,4 +1,5 @@
 import { CommentsService } from "./comments.service";
+import { moderationService } from "../ml/moderation.service";
 
 export const CommentsController = {
     create: async ({ body, jwt, set, headers }: any) => {
@@ -10,6 +11,18 @@ export const CommentsController = {
         if (!profile) { set.status = 401; return 'Unauthorized'; }
 
         const userId = profile.sub as string;
+
+        // Moderation Check
+        try {
+            const isToxic = await moderationService.isToxic(body.content);
+            if (isToxic) {
+                set.status = 400;
+                return { error: "Opa! Seu comentário viola nossas diretrizes de comunidade." };
+            }
+        } catch (e) {
+            console.error("Moderation check failed", e);
+            // Optionally decide to fail open or closed. Failing open (allowing comment) for now to not block user on system error.
+        }
 
         const comment = await CommentsService.createComment(userId, body);
         if (!comment) {

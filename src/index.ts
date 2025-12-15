@@ -5,6 +5,7 @@ import { authRoutes } from "./auth/auth.routes";
 import { postsRoutes } from "./posts/posts.routes";
 
 import { commentsRoutes } from "./comments/comments.routes";
+import { moderationService } from "./ml/moderation.service";
 
 export const app = new Elysia()
   .use(rateLimit({
@@ -15,6 +16,10 @@ export const app = new Elysia()
   .use(authRoutes)
   .use(postsRoutes)
   .use(commentsRoutes)
+  .onStart(async () => {
+    console.log("Initializing ML Model...");
+    await moderationService.init();
+  })
   .get("/", () => "Hello Elysia")
   .listen(3000);
 
