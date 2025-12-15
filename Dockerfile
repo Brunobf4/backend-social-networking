@@ -23,7 +23,8 @@ COPY . .
 # [optional] tests & build
 ENV NODE_ENV=production
 # RUN bun test
-RUN bun run prisma generate
+# DATABASE_URL is required for prisma.config.ts to load, even if not used for generation
+RUN DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy" bun run prisma generate
 
 # copy production dependencies and source code into final image
 FROM base AS release
