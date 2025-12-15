@@ -1,14 +1,42 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-# dependencies
-/node_modules
+# Environment
+.env
+.env.test
+.env.production
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Dependencies
+node_modules
+.bun-cache
 /.pnp
+
+# Build outputs
+dist
+out
+build
+/.next/
+
+# Prisma
+/prisma/migrations
+*.sqlite
+*.sqlite-journal
+/src/generated/prisma
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+logs
+*.log
 .pnp.js
 
 # testing
 /coverage
 
-# next.js
 /.next/
 /out/
 
@@ -40,3 +68,4 @@ yarn-error.log*
 **/*.log
 package-lock.json
 **/*.bun
+/src/generated/prisma

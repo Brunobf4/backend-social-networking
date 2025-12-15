@@ -1,6 +1,22 @@
 import { Elysia } from "elysia";
+import { rateLimit } from "elysia-rate-limit";
+import { swagger } from "@elysiajs/swagger";
+import { authRoutes } from "./auth/auth.routes";
+import { postsRoutes } from "./posts/posts.routes";
 
-const app = new Elysia().get("/", () => "Hello Elysia").listen(3000);
+import { commentsRoutes } from "./comments/comments.routes";
+
+export const app = new Elysia()
+  .use(rateLimit({
+    duration: 60000,
+    max: 100
+  }))
+  .use(swagger())
+  .use(authRoutes)
+  .use(postsRoutes)
+  .use(commentsRoutes)
+  .get("/", () => "Hello Elysia")
+  .listen(3000);
 
 console.log(
   `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`
